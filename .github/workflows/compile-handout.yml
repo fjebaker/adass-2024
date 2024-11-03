@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "poster/**.typ"
+  workflow_dispatch:
 
 jobs:
   render-paper:
