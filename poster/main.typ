@@ -2,6 +2,8 @@
 
 #let STROKE_WIDTH = 6pt
 
+#let SPACING = 0.6cm
+
 // colours
 #let COLOR_GREEN = rgb("#389826")
 #let COLOR_RED = rgb("#CB3C33")
@@ -30,12 +32,12 @@
 
 #let secblock(body, fill: luma(230), stroke: 0pt) = block(
   fill: fill.lighten(80%),
-  inset: 1cm,
-  radius: 1cm,
+  inset: SPACING,
+  radius: SPACING,
   width: 100%,
   stroke: fill + 6pt,
-  below: 1cm,
-  above: 1cm,
+  below: SPACING,
+  above: SPACING,
 )[
   #body
 ]
@@ -45,10 +47,10 @@
   set text(weight: "black")
   set par(leading: 0pt)
   block(
-    inset: (left: 0cm, right: 1cm),
+    inset: (left: 0cm, right: SPACING),
     grid(
       columns: (50%, 1fr),
-      column-gutter: 1cm,
+      column-gutter: SPACING,
       text(size: 130pt)[SpectralFitting.jl:],
       [
         #set par(leading: 20pt)
@@ -60,7 +62,7 @@
   set text(weight: "regular")
   v(-6cm)
   text(size: 40pt)[
-    *Fergus Baker*#super("1"), Andrew Young#super("1"), Paul Barrett#super("2"), Eric Schlegel#super("3"), Joe Prendergast#super("4")
+    *Fergus Baker*#super[1,$dagger$], Andrew Young#super("1"), Paul Barrett#super("2"), Eric Schlegel#super("3"), Joe Prendergast#super("4")
   ]
   h(1fr)
   box(inset: (top: 2.5cm), image("./logos/logo.svg", height: 7cm), height: 7cm)
@@ -81,27 +83,35 @@
   using a series of simple APIs.
 
   In the era of ever higher resolution and high volume astronomical data, the
-  *computational performance* of models are crucial to avoid bottlenecks in a
+  *computational performance* of models is crucial to avoid bottlenecks in a
   fitting. Modern spectral fitting tools *must take advantage* of the massively
-  *parallel compute* available on modern hardware. As SpectralFitting is
+  *parallel architectures* available on modern hardware. As SpectralFitting is
   written in the Julia programming language, the tool is portable and scalable
-  over a wide variety of architectures and hardware.
-
+  over a wide variety of machines.
 ]
 
 #let modular_design = secblock(fill: COLOR_RED)[
   = Modules and FFI
-  *foreign function interface (FFI)*
-  Cross-compiled XSPEC model library, model distribution,
-  Julia Package manager for distribution
-  - Illustration of how we deliver models
-
+  The modular design of SpectralFitting, along with Julia's *foreign function
+  interface (FFI)*, make existing models in other programming language
+  available to the user. We have cross-compiled and wrapped the entire XSPEC
+  model library with BinaryBuilder.jl for lazily-loaded distribution. We use
+  the built-in Julia *package manager Pkg.jl* with a domain-specific registry
+  to distribute user models and data.
+  #v(0.25cm)
+  #v(-1.7em)
   #image("./figs/architecture.svg", width: 100%)
+  #v(-0.052em)
+  #v(0.25cm)
+  SpectralFitting has *four principle APIs*. Each is designed to be pluggable
+  and permit down-stream packages to *alter and extend* the behaviour of the
+  package in a robust way.
 ]
 
 #let models = secblock(fill: COLOR_GREEN)[
   = Differentiable models
-  Julia has excellent support for *automatic differentiation (AD)*. We can calculate derivatives on the forward (or backward) pass through the model for use in the *numerical optimizer*, enabling advanced optimization algorithms.
+  Julia has excellent support for *automatic differentiation (AD)*, enabling the evaluation of derivatives in tandem with the model. The derivative information can be used by the *numerical optimizer*, permitting the use of advanced optimization algorithms, and reducing inference time.
+  #v(-0.8cm)
   ```julia
   Base.@kwdef struct MyModel{T} <:
       AbstractSpectralModel{T,Additive}
@@ -119,65 +129,147 @@
     3.0
   )
   ```
-  The number abstraction allows us to also use packages like Measurements.jl or Unitful.jl to propagate uncertainties or units seamlessly through the package.
+  #v(-0.8cm)
+  The Julia Number abstraction allows us to also use the *Measurements.jl* or *Unitful.jl* packages to propagate uncertainties or units seamlessly.
 ]
 
 #let fits = secblock(fill: COLOR_PURPLE)[
-  = Flexible fitting
-  #grid(columns: (42%, 1fr),
+  #grid(
+    columns: (41%, 1fr),
+    column-gutter: SPACING,
     [
-    SpectralFitting already vendors *many mathematical optimizers*, including Levenberg-Marquadt least-squares, Nelder-Mead, Broyden-Fletcher-Goldfarb-Shanno, and allows users to use probabilistic frameworks, like Turing.jl, with ease. *Simultaneous fits* can be performed, with *parameter binding*, minimizing $chi^2$ or the Cash statistic, or even a *user-defined likelihood function*. Access to AD make these performant and accurate.
+    #align(center)[
+      #rect(
+        radius:SPACING,
+        width: 100%,
+        fill: white,
+        inset:5mm,
+        stroke: black + 2pt,
+        image("./figs/xrism-obs-example.svg", width:90%)
+      )
+    ]
+    #v(-0.8cm)
     ```julia
     prob = FittingProblem(model1 => data1, model2 => data2)
     # bind parameters by their symbols
     bind!(prob, 1 => :K, 2 => :a)
     # one line changes to use different minimizations
-    result = fit(prob, Levenberg-Marquadt())
+    result = fit(prob, LevenbergMarquadt())
     result = fit(prob, NelderMead(); stat = Cash())
     result = fit(prob, BFGS())
     ```
-  ]
+    ],
+    [
+    = Flexible fitting
+    SpectralFitting is compatible with *many mathematical optimizers*,
+    including Levenberg-Marquadt least-squares, Nelder-Mead,
+    Broyden-Fletcher-Goldfarb-Shanno, and allows users to use probabilistic
+    frameworks, such as Turing.jl, with ease. *Simultaneous fits* can be
+    performed, with *parameter binding*, minimizing $chi^2$ or the Cash
+    statistic, or even a *user-defined likelihood function*.
+    #v(-0.8cm)
+    #align(center)[
+      #rect(
+        radius:SPACING,
+        width: 100%,
+        fill: white,
+        inset:5mm,
+        stroke: black + 2pt,
+        grid(columns: (50%, 1fr),
+          column-gutter: SPACING,
+          [
+            #v(1cm)
+            #image("./figs/mcmc-fit.svg", width:100%)
+          ],
+          image("./figs/mcmc-example.svg", width:94%),
+        )
+      )
+    ]
+
+    ],
   )
 ]
 
 #let performance = secblock(fill: COLOR_RED)[
   = Performance
-  SpectralFitting is designed to take *full advantage of multi-core, parallel execution*, and even *GPU offloading*.
+  SpectralFitting is designed to take *full advantage of multi-core, parallel execution*, and even *GPU offloading*. The *multiple dispatch* paradigm in Julia allows simple models to have contextual implementations, that are *just-in-*
+  #v(-0.7em)
+  #grid(
+    columns: (58%, 1fr),
+    column-gutter: SPACING,
+    [
+      #align(center)[
+      #rect(
+        radius:SPACING,
+        width: 100%,
+        fill: white,
+        inset:5mm,
+        stroke: black + 2pt,
+        image("./figs/benchmark-comparison.svg", width:100%)
+      )
+    ]
+  ], [
+     *time (JIT)* compiled. This means even naive implementations of simple models, such as a Gaussian distribution, can *outperform* the XSPEC implementations by a factor of 3.
+
+  ])
 ]
 
-#let surrogates = secblock(fill: COLOR_BLUE)[
+#let surrogates = secblock(fill: COLOR_GREEN)[
   = Surrogates and Machine Learning
-  Models that are too slow to be effectively fitted can be wrapped as a
-  *surrogate model*. Surrogates are *machine learned* alternatives for the
-  model component, which can be trained to replicate the output space of the
-  model, or used in *hybrid* to learn the fit statistic and help *optimize the
-  fit*.
+  Surrogate spectral models are *machine learned* proxies for a model
+  component, useful when performance is bottlenecked, or differentiability is
+  needed. Surrogates are trained to replicate the output space of a model, or
+  can be used in *amalgamation (hybrid) with the underlying model* to learn the
+  manifold of the *fit statistics* and help *optimize the fit*.
+
+  #v(-0.8cm)
+  #align(center)[
+      #rect(
+        radius:SPACING,
+        width: 100%,
+        fill: white,
+        inset:5mm,
+        stroke: black + 2pt,
+        image("./figs/surrogate-example.png", width: 75%)
+      )
+  ]
+  #v(-0.8cm)
+
+  Surrogates created from XSPEC models can give *over a 1000x speedup* without hyperparameter tuning, and suffer *less than a 1% error* in the reproduction.
 ]
 
-#let conclusion = secblock(fill: COLOR_GREEN)[
+#let conclusion = secblock(fill: COLOR_BLUE)[
   = Conclusion
+  We invite *collaboration, comments on, and use-cases* for SpectralFitting. The state of the project and progress towards different goals are described in more detail in our documentation, which can be found alongside the *GitHub repository*.
+
+  SpectralFitting is open-source under the GPL-3.0 license.
 ]
 
-#set columns(gutter: 1cm)
+#set columns(gutter: SPACING)
 
 #grid(columns: (44%, 1fr),
-  column-gutter: 1cm, row-gutter: 1cm,
+  column-gutter: SPACING, row-gutter: SPACING,
   [
-    #text(size: 38pt)[
-      #box(image("./logos/github-mark.svg"), height: 1em) #link("https://github.com/fjebaker/SpectralFitting.jl/")
+    #v(-1cm)
+    #text(weight: "black", size: 38pt, fill: COLOR_BLUE)[
+      #box(inset: (left: 1cm), image("./logos/github-mark.svg"), height: 1em) #link("https://github.com/fjebaker/SpectralFitting.jl/") \
+      #box(inset: (left: 1cm), text(fill: black)[🖂], height: 1em) #super[#text(fill: black)[$dagger$]]#link("fergus.baker@bristol.ac.uk")
     ]
+    #v(-1cm)
     = Abstract
-    We present SpectralFitting, an open-source, work-in-progress package for the
-    Julia programming language that aims to modernise the spectral fitting process.
-    Our approach is to create modular, lazily loaded, strictly reproducible and
+    We present SpectralFitting, an *open-source*, work-in-progress package for the
+    *Julia programming language* that aims to modernise the spectral fitting process.
+    Our approach is to create modular, lazily-loaded, strictly reproducible and
     easily distributable software that can fully utilize available computational
-    resources. We aim to unite existing analysis tooling across the electromagnetic
+    resources. We aim to *unite existing analysis tooling* across the electromagnetic
     spectrum, to provide a single tool that can fit large volumes of
     multi-wavelength data, with a choice of optimization algorithms and hardware
-    acceleration. We welcome collaboration and comments.
+    acceleration. Our initial focus is on X-ray data. We welcome collaboration and comments.
+    #v(0.2cm)
     #models
   ],
   [
+    #v(-0.5cm)
     #introduction
     #modular_design
   ]
@@ -185,15 +277,38 @@
 
 #fits
 
-#columns(2)[
-  #performance
+#grid(
+  columns: (55%, 1fr),
+  column-gutter: SPACING,
+  row-gutter: SPACING,
+  [
+    #performance
+    #conclusion
+  ],
+  [
+    #surrogates
+    #v(SPACING)
+    #grid(
+      columns: (30%, 1fr),
+      [
+        #set align(center)
+        #set align(horizon)
+        #image("./figs/adass-github.svg", width: 65%)
+      ],
+      [
+        For the source code for this poster, including all figures, scan the QR code or visit: \
+        #text(fill: COLOR_BLUE)[#link("https://github.com/fjebaker/adass-2024")] \
+        Find more information about SpectralFitting at the same place.
+      ]
+    )
+    #v(-1cm)
+  ]
 
-  #colbreak()
+)
 
-  #surrogates
-  #conclusion
-]
-
-#secblock(stroke: STROKE_WIDTH + black)[
-  Footer
-]
+// #secblock(stroke: STROKE_WIDTH + black)[
+  #text(size: 28pt)[
+    *Affiliations:*\
+    #super("1")University of Bristol, #super("2")The George Washington University, #super("3")University of Texas in San Antonio, #super("4")American University
+  ]
+// ]
