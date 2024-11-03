@@ -1,0 +1,32 @@
+name: Compile
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "poster/**.typ"
+
+jobs:
+  render-paper:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: typst-community/setup-typst@v3
+        with:
+          cache-dependency-path: requirements.typ
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'slides-%Y-%m-%d-%H-%M-%S')" >> $GITHUB_OUTPUT
+      - name: Compile
+        run: |
+          typst compile poster/main.typ ${{ steps.date.outputs.date }}.pdf
+      - name: Upload release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ steps.date.outputs.date }}.pdf
+          name: ${{ steps.date.outputs.date }}
+          tag_name: ${{ steps.date.outputs.date }}
+
