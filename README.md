@@ -2,7 +2,7 @@
 
 Source code for my ADASS 2024 poster on [SpectralFitting](https://github.com/fjebaker/SpectralFitting.jl).
 
-You can download a copy of the poster from the [latest release]().
+You can download a copy of the poster from the [latest release](https://github.com/fjebaker/adass-2024/releases/latest).
 
 ## Poster
 
