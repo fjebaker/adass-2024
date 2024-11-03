@@ -1,0 +1,50 @@
+digraph G {
+    graph [splines=false];
+
+    subgraph cluster0 {
+        models;
+        api;
+        stat;
+        vis;
+
+        label = "SpectralFitting";
+        labelloc=b;
+    }
+
+    subgraph cluster1 {
+        xspec;
+        turing;
+        optim;
+        plots;
+        makie;
+
+        label = "Example optional packages";
+        labelloc=t;
+    }
+
+    data -> xspec [style=dashed];
+    data -> usermods [style=dashed];
+    xspec -> models;
+    usermods -> models;
+    lib -> xspec;
+    turing -> api;
+    optim -> api;
+    plots -> vis;
+    makie -> vis;
+
+    api [shape=rectangle; label = "Optimization\nAPI";]
+    models [shape=rectangle; label = "AbstractSpectralModel";]
+    stat [shape=rectangle; label = "AbstractStatistic"];
+    vis [shape=rectangle; label = "Visualization\nAPI"];
+    data [shape=rectangle; label = "Remote\nData"];
+
+    turing [label = "Turing.jl"];
+    optim [label = "Optimizations.jl"];
+
+    plots [label = "Plots.jl"];
+    makie [label = "Makie.jl"];
+
+    xspec [label = "XSPECModels.jl"];
+    lib [label = "Compiled models"];
+    usermods [label = "User models"];
+}
