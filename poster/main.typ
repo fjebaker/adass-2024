@@ -60,13 +60,17 @@
   )
 
   set text(weight: "regular")
-  v(-6cm)
+  v(-0.6cm)
   text(size: 40pt)[
-    *Fergus Baker*#super[1,$dagger$], Andrew Young#super("1"), Paul Barrett#super("2"), Eric Schlegel#super("3"), Joe Prendergast#super("4")
+    #block(width: 80%)[
+    *Fergus Baker*#super[1,$dagger$], Andrew Young#super("1"), Gloria Raharimbolamena#super("1"), Paul Barrett#super("2"), \
+    Eric Schlegel#super("3"), Joe Prendergast#super("4")
+    ]
   ]
+  v(-8.3cm)
   h(1fr)
-  box(inset: (top: 2.5cm), image("./logos/logo.svg", height: 7cm), height: 7cm)
-  box(inset: (top: 1.5cm), image("./logos/UoB_CMYK_24.svg", height: 8cm), height: 7cm)
+  box(inset: (top: 1.5cm), image("./logos/logo.svg", height: 7cm), height: 7cm)
+  box(inset: (top: 0.5cm), image("./logos/UoB_CMYK_24.svg", height: 8cm), height: 7cm)
 }
 
 #let introduction = secblock(fill: COLOR_BLUE)[
@@ -209,8 +213,11 @@
       )
     ]
   ], [
-     *time (JIT)* compiled. This means even naive implementations of simple models, such as a Gaussian distribution, can *outperform* the XSPEC implementations by a factor of 3.
-
+     *time (JIT)* compiled. This means even naive implementations of simple
+     models, such as a Gaussian distribution, can *outperform* the XSPEC
+     implementations by a factor of 3 on a single thread. With AD, the
+     *parameter inference time* consistently outperforms the inference of
+     other spectral fitting solutions.
   ])
 ]
 
@@ -240,7 +247,7 @@
 
 #let conclusion = secblock(fill: COLOR_BLUE)[
   = Conclusion
-  We invite *collaboration, comments on, and use-cases* for SpectralFitting. The state of the project and progress towards different goals are described in more detail in our documentation, which can be found alongside the *GitHub repository*.
+  We invite *collaboration and use-cases* for SpectralFitting. The state of the project and progress towards different goals are described in more detail in our documentation, which can be found alongside our *GitHub repository* (link at the top of the poster). We encourage use, bug reports, and feedback.
 
   SpectralFitting is open-source under the GPL-3.0 license.
 ]
@@ -255,7 +262,7 @@
       #box(inset: (left: 1cm), image("./logos/github-mark.svg"), height: 1em) #link("https://github.com/fjebaker/SpectralFitting.jl/") \
       #box(inset: (left: 1cm), text(fill: black)[🖂], height: 1em) #super[#text(fill: black)[$dagger$]]#link("fergus.baker@bristol.ac.uk")
     ]
-    #v(-1cm)
+    #v(-1.5cm)
     = Abstract
     We present SpectralFitting, an *open-source*, work-in-progress package for the
     *Julia programming language* that aims to modernise the spectral fitting process.
@@ -269,7 +276,7 @@
     #models
   ],
   [
-    #v(-0.5cm)
+    #v(-1.0cm)
     #introduction
     #modular_design
   ]
@@ -287,7 +294,7 @@
   ],
   [
     #surrogates
-    #v(SPACING)
+    #v(SPACING / 2)
     #grid(
       columns: (30%, 1fr),
       [
@@ -296,8 +303,9 @@
         #image("./figs/adass-github.svg", width: 65%)
       ],
       [
+        #set text(size: 30pt)
         For the source code for this poster, including all figures, scan the QR code or visit: \
-        #text(fill: COLOR_BLUE)[#link("https://github.com/fjebaker/adass-2024")] \
+        #text(fill: COLOR_BLUE)[#link("https://github.com/fjebaker/adass-2024/")] \
         Find more information about SpectralFitting at the same place.
       ]
     )
@@ -307,6 +315,7 @@
 )
 
 // #secblock(stroke: STROKE_WIDTH + black)[
+#v(-0.5cm)
   #text(size: 28pt)[
     *Affiliations:*\
     #super("1")University of Bristol, #super("2")The George Washington University, #super("3")University of Texas in San Antonio, #super("4")American University
